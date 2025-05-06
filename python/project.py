@@ -71,28 +71,25 @@ Counter(locations) # frequency of each location
 ## ten random integer image ID
 random_integers = [random.randint(1, len(metadataImg)) for _ in range(10)]  # Random integers between 1 and 100
 print(random_integers)
-[metadataAnn[i]['id'] for i in random_integers]
-# %% now let's look at the images
-# Assuming 'file_name' in metadataImg contains the relative path to the image
-for random_id in random_integers:
-    # Find the image entry with the matching 'id'
-    image_entry = next((img for img in metadataImg if img['id'] == random_id), None)
-    
-    #if image_entry:
-        # Get the file path of the image
-        #image_path = os.path.join(r'c:\Users\kapur\Dropbox\other projects\cv4e\data\Images', image_entry['file_name'])  # Replace 'path_to_images_directory' with the actual directory
-    image_path = os.path.join(r'c:\Users\kapur\Dropbox\other projects\cv4e\data\Images', metadataAnn[random_id]['id'])
-        # Check if the image file exists
-    print(f"Opening image: {image_path}")
-        
-        # Open the image (e.g., using PIL or OpenCV)
-      
-        img = Image.open(image_path)
-        img.show()
-    else:
-        print(f"No image found for id: {random_id}")
+headpath = r'c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-lila'
 
+#%% make filepaths for the 10 random images and open them
+## here are the full filepaths for the 10 random images
+ 
+filepaths = [f"{headpath}/{metadataAnn[i]['image_id']}" for i in random_integers]
+print(filepaths)
+img = Image.open(filepaths[0])
+img.show()
 
+#%% Map the string categories to category_id for the 10 random images
+mapped_categories = [
+    category_mapping.get(metadataAnn[i]['category_id'], f"Unknown ID {metadataAnn[i]['category_id']}")
+    for i in random_integers if i < len(metadataAnn)
+]
 
+## loop thru the images, open them and print the category name
+for i in range(len(random_integers)):
+    img = Image.open(filepaths[i])
+    img.show()
+    print(f"Image {i + 1}: Category ID = {metadataAnn[random_integers[i]]['category_id']}, Category Name = {mapped_categories[i]}")
 
-# %%
