@@ -3,10 +3,12 @@
 #%% imports and cleanup
 ## open metadata and print num images by category in dataset
 import json
+import os # to use listdir and other pwd
 from collections import Counter##
 import matplotlib.pyplot as plt
 import numpy as np
-
+import random
+from PIL import Image
 # Replace 'metadata.json' with the path to your JSON metadata file
 metadata_file = r'c:\Users\kapur\Dropbox\other projects\cv4e\data\osu-small-animals.json'
 
@@ -66,3 +68,31 @@ len(set(locations)) # check how many unique locations exist in the dataset
 Counter(locations) # frequency of each location
 # %%
 #%%  Pick 10 images at random and look at them to make sure the labels are correct…
+## ten random integer image ID
+random_integers = [random.randint(1, len(metadataImg)) for _ in range(10)]  # Random integers between 1 and 100
+print(random_integers)
+[metadataAnn[i]['id'] for i in random_integers]
+# %% now let's look at the images
+# Assuming 'file_name' in metadataImg contains the relative path to the image
+for random_id in random_integers:
+    # Find the image entry with the matching 'id'
+    image_entry = next((img for img in metadataImg if img['id'] == random_id), None)
+    
+    #if image_entry:
+        # Get the file path of the image
+        #image_path = os.path.join(r'c:\Users\kapur\Dropbox\other projects\cv4e\data\Images', image_entry['file_name'])  # Replace 'path_to_images_directory' with the actual directory
+    image_path = os.path.join(r'c:\Users\kapur\Dropbox\other projects\cv4e\data\Images', metadataAnn[random_id]['id'])
+        # Check if the image file exists
+    print(f"Opening image: {image_path}")
+        
+        # Open the image (e.g., using PIL or OpenCV)
+      
+        img = Image.open(image_path)
+        img.show()
+    else:
+        print(f"No image found for id: {random_id}")
+
+
+
+
+# %%
