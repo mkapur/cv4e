@@ -50,3 +50,12 @@ plt.scatter(xval, yval, color='blue')
 
 import ultralytics as yolo
 # %%
+
+# %%
+x = 4
+y = x+10
+if y>x:
+    print("y is greater than x")
+else:
+    print("x is greater than y")
+# %%
