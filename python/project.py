@@ -132,7 +132,8 @@ print(f"Number of missing IDs: {len(missing_ids)}")
 
 
 #%%  day 3 - start training with the YOLO classification framework
-## choose the categories you want to train on. first cut just randomly choose 80.20.
+## choose the categories you want to train on. 
+## first cut just randomly choose 80.20.
 from sklearn.model_selection import train_test_split
 
 # Drop blank images (NA or empty image_id)
@@ -141,9 +142,10 @@ filtered_metadata = metadataAnnDF[metadataAnnDF['image_id'].notna() & (metadataA
 # Split into training and test sets (80% train, 20% test)
 train_set, test_set = train_test_split(filtered_metadata, test_size=0.2, random_state=42)
 
-# Print the sizes of the sets
+# Print the sizes of the sets, these are DFs
 print(f"Training set size: {len(train_set)}")
 print(f"Test set size: {len(test_set)}")
-
+type(train_set)
+train_set.head(5) # check the first 5 rows of the training set
 
 # %%
