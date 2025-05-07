@@ -182,10 +182,12 @@ train_dir = os.path.join(script_dir, "..", "yolo_data/train")
 val_dir = os.path.join(script_dir, "..", "yolo_data/val")
 #os.makedirs(train_dir, exist_ok=True)
 #os.makedirs(val_dir, exist_ok=True)
-
+headpath
 # Resize dimensions (e.g., 640x640 for YOLO)
-resize_dim = (640, 640)
-
+resize_dim = (224, 224)
+train_set.head()
+#os.path.join(headpath, train_set['image_id'].iloc[0]) # check the path to the first image in the training set
+#f"{headpath}/{ train_set['image_id'].iloc[0]}" # check the path to the first image in the training set
 # Function to resize and save images
 def resize_and_save_image(src_path, dest_path):
     with Image.open(src_path) as img:
@@ -194,7 +196,9 @@ def resize_and_save_image(src_path, dest_path):
 
 # Create resized images and shortcuts for training images
 for filepath in train_set['image_path']:
+    filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
     dest_path = os.path.join("yolo_data/train", os.path.basename(filepath))
+   # dest_path = os.path.join("yolo_data/train", os.path.basename(filepath))
     resize_and_save_image(filepath, dest_path)
 
 # Create resized images and shortcuts for validation images
@@ -210,3 +214,4 @@ val_dir = "yolo_data/val"
 yolo_command = generate_yolo_command(train_dir, val_dir)
 print("Copy and paste this command into your terminal:")
 print(yolo_command)
+# %%
