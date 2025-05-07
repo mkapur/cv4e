@@ -195,15 +195,16 @@ def resize_and_save_image(src_path, dest_path):
         img_resized.save(dest_path)
 
 # Create resized images and shortcuts for training images
-for filepath in train_set['image_id'][0:5]:
+for filepath in train_set['image_id']:
     filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
     dest_path = f"{headpath}/yolo_data/train/{os.path.basename(filepath)}"  # check the path to the first image in the training set
     resize_and_save_image(filepath2, dest_path)
 
 # Create resized images and shortcuts for validation images
-for filepath in test_set['image_path']:
-    dest_path = os.path.join("yolo_data/val", os.path.basename(filepath))
-    resize_and_save_image(filepath, dest_path)
+for filepath in test_set['image_id']:
+    filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
+    dest_path = f"{headpath}/yolo_data/val/{os.path.basename(filepath)}"  # check the path to the first image in the training set
+    resize_and_save_image(filepath2, dest_path)    
 
 # Set the directories for YOLO
 train_dir = "yolo_data/train"
