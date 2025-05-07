@@ -149,30 +149,7 @@ type(train_set)
 train_set.head(5) # check the first 5 rows of the training set
 
 #f = open(os.path.join('..','documents')
-#%% function to make YOLO command to paste into the terminal
 
-def generate_yolo_command(train_dir, val_dir, model="yolov8n-cls.pt", epochs=50, patience=10):
-    """
-    Generates a YOLO command for training a classification model.
-
-    Args:
-        train_dir (str): Path to the training images directory.
-        val_dir (str): Path to the validation images directory.
-        model (str): YOLO model to use (default: yolov8n-cls.pt).
-        epochs (int): Number of training epochs (default: 50).
-        patience (int): Early stopping patience (default: 10).
-
-    Returns:
-        str: The YOLO command to run in the terminal.
-    """
-    command = (
-        f"yolo task=classify mode=train model={model} "
-        f"data.train={train_dir} data.val={val_dir} "
-        f"epochs={epochs} patience={patience}"
-    )
-    return command
-
- 
 # %% 
 script_dir = os.path.dirname(os.path.abspath(__file__)) ## a la "here"
 
@@ -198,20 +175,23 @@ def resize_and_save_image(src_path, dest_path):
 for filepath in train_set['image_id']:
     filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
     dest_path = f"{headpath}/yolo_data/train/{os.path.basename(filepath)}"  # check the path to the first image in the training set
-    resize_and_save_image(filepath2, dest_path)
+    #resize_and_save_image(filepath2, dest_path)
 
 # Create resized images and shortcuts for validation images
 for filepath in test_set['image_id']:
     filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
     dest_path = f"{headpath}/yolo_data/val/{os.path.basename(filepath)}"  # check the path to the first image in the training set
-    resize_and_save_image(filepath2, dest_path)    
+    #resize_and_save_image(filepath2, dest_path)    
 
 # Set the directories for YOLO
-train_dir = "yolo_data/train"
-val_dir = "yolo_data/val"
+train_dir = f"{headpath}/yolo_data/train/"
+val_dir = f"{headpath}/yolo_data/val/"
 
 # Generate the YOLO command
 yolo_command = generate_yolo_command(train_dir, val_dir)
 print("Copy and paste this command into your terminal:")
 print(yolo_command)
+# %%'c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-lila/yolo_data/val/'
+## data has the root dir with test and train folders in it
+yolo classify train model=yolo11n-cls data='c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-lila/yolo_data/' epochs=50 patience=10
 # %%
