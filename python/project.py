@@ -148,4 +148,65 @@ print(f"Test set size: {len(test_set)}")
 type(train_set)
 train_set.head(5) # check the first 5 rows of the training set
 
-# %%
+#f = open(os.path.join('..','documents')
+#%% function to make YOLO command to paste into the terminal
+
+def generate_yolo_command(train_dir, val_dir, model="yolov8n-cls.pt", epochs=50, patience=10):
+    """
+    Generates a YOLO command for training a classification model.
+
+    Args:
+        train_dir (str): Path to the training images directory.
+        val_dir (str): Path to the validation images directory.
+        model (str): YOLO model to use (default: yolov8n-cls.pt).
+        epochs (int): Number of training epochs (default: 50).
+        patience (int): Early stopping patience (default: 10).
+
+    Returns:
+        str: The YOLO command to run in the terminal.
+    """
+    command = (
+        f"yolo task=classify mode=train model={model} "
+        f"data.train={train_dir} data.val={val_dir} "
+        f"epochs={epochs} patience={patience}"
+    )
+    return command
+
+ 
+# %% 
+script_dir = os.path.dirname(os.path.abspath(__file__)) ## a la "here"
+
+# Create YOLO-compatible directories relative to the script's directory
+# Create YOLO-compatible directories relative to the script's directory
+train_dir = os.path.join(script_dir, "..", "yolo_data/train")
+val_dir = os.path.join(script_dir, "..", "yolo_data/val")
+#os.makedirs(train_dir, exist_ok=True)
+#os.makedirs(val_dir, exist_ok=True)
+
+# Resize dimensions (e.g., 640x640 for YOLO)
+resize_dim = (640, 640)
+
+# Function to resize and save images
+def resize_and_save_image(src_path, dest_path):
+    with Image.open(src_path) as img:
+        img_resized = img.resize(resize_dim)
+        img_resized.save(dest_path)
+
+# Create resized images and shortcuts for training images
+for filepath in train_set['image_path']:
+    dest_path = os.path.join("yolo_data/train", os.path.basename(filepath))
+    resize_and_save_image(filepath, dest_path)
+
+# Create resized images and shortcuts for validation images
+for filepath in test_set['image_path']:
+    dest_path = os.path.join("yolo_data/val", os.path.basename(filepath))
+    resize_and_save_image(filepath, dest_path)
+
+# Set the directories for YOLO
+train_dir = "yolo_data/train"
+val_dir = "yolo_data/val"
+
+# Generate the YOLO command
+yolo_command = generate_yolo_command(train_dir, val_dir)
+print("Copy and paste this command into your terminal:")
+print(yolo_command)
