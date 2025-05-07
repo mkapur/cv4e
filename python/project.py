@@ -4,11 +4,14 @@
 ## open metadata and print num images by category in dataset
 import json
 import os # to use listdir and other pwd
-from collections import Counter##
+from collections import Counter ##
 import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
 import random
 from PIL import Image
+
+#%% setup
 # Replace 'metadata.json' with the path to your JSON metadata file
 metadata_file = r'c:\Users\kapur\Dropbox\other projects\cv4e\data\osu-small-animals.json'
 
@@ -24,7 +27,6 @@ metadata['categories'] # check the info in the metadata
 metadataImg = metadata['images'] # to load the images only
 metadataAnn = metadata['annotations'] ## to load the labels only
 category_strings = metadata['categories'] ## where the string labels are stored
-
 
 # Assuming the metadata contains a list of images with a 'category' field
 categories = [image['category_id'] for image in metadataAnn if 'category_id' in image]
@@ -66,7 +68,7 @@ locations = [image['location'] for image in metadataImg if 'location' in image]
 locations[:5]
 len(set(locations)) # check how many unique locations exist in the dataset
 Counter(locations) # frequency of each location
-# %%
+
 #%%  Pick 10 images at random and look at them to make sure the labels are correct…
 ## ten random integer image ID
 random_integers = [random.randint(1, len(metadataImg)) for _ in range(10)]  # Random integers between 1 and 100
@@ -76,10 +78,10 @@ headpath = r'c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-l
 #%% make filepaths for the 10 random images and open them
 ## here are the full filepaths for the 10 random images
  
-filepaths = [f"{headpath}/{metadataAnn[i]['image_id']}" for i in random_integers]
+""" filepaths = [f"{headpath}/{metadataAnn[i]['image_id']}" for i in random_integers]
 print(filepaths)
 img = Image.open(filepaths[0])
-img.show()
+img.show() """
 
 #%% Map the string categories to category_id for the 10 random images
 mapped_categories = [
@@ -88,8 +90,60 @@ mapped_categories = [
 ]
 
 ## loop thru the images, open them and print the category name
-for i in range(len(random_integers)):
+for"""  i in range(len(random_integers)):
     img = Image.open(filepaths[i])
     img.show()
-    print(f"Image {i + 1}: Category ID = {metadataAnn[random_integers[i]]['category_id']}, Category Name = {mapped_categories[i]}")
+    p """rint(f"Image {i + 1}: Category ID = {metadataAnn[random_integers[i]]['category_id']}, Category Name = {mapped_categories[i]}")
 
+#%% how many images have multiple labels?
+## going to count the number of image ids that are duplicated in the metadataAnnDF
+## bring these into a dataframe to make it easier to work with
+metadataAnnDF=pd.DataFrame(metadataAnn)
+## count the number of entries in metatadataAnnDF for each image id
+counts = metadataAnnDF['image_id'].value_counts()
+
+metadataAnnDF['category_id'].value_counts() # check how many image ids are blank
+
+# Filter for image_ids with counts greater than 1
+duplicate_image_ids = counts[counts > 1]
+len(duplicate_image_ids) ## none??
+
+#%% are there any images with no labels?
+metadataAnnDF['image_id'].isna().sum() 
+(metadataAnnDF['image_id'] == '').sum()# check how many unique image ids are in the labels
+#%% are there labels that correspond to images not in the dataset?
+## this means we have to look at the metadataImgDF and 
+# see if there are any image ids that are not in the metadataAnnDF
+metadata.keys()
+metadataCatDF=pd.DataFrame(metadata['categories'])
+
+# Get unique IDs from metadataCatDF and metadataAnnDF
+cat_ids = set(metadataCatDF['id']) ## makes a SET
+ann_category_ids = set(metadataAnnDF['category_id'])
+
+# Find the intersection
+intersection_ids = cat_ids.intersection(ann_category_ids)
+print(f"Intersection of IDs: {intersection_ids}")
+print(f"Number of intersecting IDs: {len(intersection_ids)}")
+ # Find IDs in cat_ids that are not in ann_category_ids
+missing_ids = cat_ids.difference(ann_category_ids)
+print(f"IDs in cat_ids but not in ann_category_ids: {missing_ids}")
+print(f"Number of missing IDs: {len(missing_ids)}")
+
+
+#%%  day 3 - start training with the YOLO classification framework
+## choose the categories you want to train on. first cut just randomly choose 80.20.
+from sklearn.model_selection import train_test_split
+
+# Drop blank images (NA or empty image_id)
+filtered_metadata = metadataAnnDF[metadataAnnDF['image_id'].notna() & (metadataAnnDF['image_id'] != '')]
+
+# Split into training and test sets (80% train, 20% test)
+train_set, test_set = train_test_split(filtered_metadata, test_size=0.2, random_state=42)
+
+# Print the sizes of the sets
+print(f"Training set size: {len(train_set)}")
+print(f"Test set size: {len(test_set)}")
+
+
+# %%
