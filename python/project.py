@@ -12,6 +12,8 @@ import random
 from PIL import Image
 
 #%% setup
+headpath = r'c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-lila'
+
 # Replace 'metadata.json' with the path to your JSON metadata file
 metadata_file = r'c:\Users\kapur\Dropbox\other projects\cv4e\data\osu-small-animals.json'
 
@@ -73,7 +75,6 @@ Counter(locations) # frequency of each location
 ## ten random integer image ID
 random_integers = [random.randint(1, len(metadataImg)) for _ in range(10)]  # Random integers between 1 and 100
 print(random_integers)
-headpath = r'c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-lila'
 
 #%% make filepaths for the 10 random images and open them
 ## here are the full filepaths for the 10 random images
@@ -154,11 +155,15 @@ train_set.head(5) # check the first 5 rows of the training set
 script_dir = os.path.dirname(os.path.abspath(__file__)) ## a la "here"
 
 # Create YOLO-compatible directories relative to the script's directory
-# Create YOLO-compatible directories relative to the script's directory
+
 train_dir = os.path.join(script_dir, "..", "data/osu-small-animals-lila/yolo_data/train")
 val_dir = os.path.join(script_dir, "..", "data/osu-small-animals-lila/yolo_data/val")
 #os.makedirs(train_dir, exist_ok=True)
 #os.makedirs(val_dir, exist_ok=True)
+
+# YOLO reads the classes from the basedir. so make those folders, too
+#os.makedirs(os.path.join(train_dir, "0"), exist_ok=True)
+# check the path to the first image in the training set
 #headpath
 # Resize dimensions (e.g., 640x640 for YOLO)
 resize_dim = (224, 224)
@@ -172,26 +177,28 @@ def resize_and_save_image(src_path, dest_path):
         img_resized.save(dest_path)
 
 # Create resized images and shortcuts for training images
-for filepath in train_set['image_id']:
+for filepath in train_set['image_id'][0:10000]:
     filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
-    dest_path = f"{headpath}/yolo_data/train/{os.path.basename(filepath)}"  # check the path to the first image in the training set
-    #resize_and_save_image(filepath2, dest_path)
+    dest_dir = f"{headpath}/yolo_data/train/{os.path.basename(os.path.dirname((filepath)))}"  # check the path to the first image in the training set
+    os.makedirs(dest_dir, exist_ok=True)  # Create the directory if it doesn't exist
+    dest_path = f"{headpath}/yolo_data/train/{os.path.basename(os.path.dirname((filepath)))}/{os.path.basename(filepath)}"  # check the path to the first image in the training set
+    resize_and_save_image(filepath2, dest_path)
 
 # Create resized images and shortcuts for validation images
-for filepath in test_set['image_id']:
+for filepath in test_set['image_id'][0:10000]:
     filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
-    dest_path = f"{headpath}/yolo_data/val/{os.path.basename(filepath)}"  # check the path to the first image in the training set
-    #resize_and_save_image(filepath2, dest_path)    
+    dest_dir = f"{headpath}/yolo_data/val/{os.path.basename(os.path.dirname((filepath)))}"  # check the path to the first image in the training set
+    os.makedirs(dest_dir, exist_ok=True)  # Create the directory if it doesn't exist
+    dest_path = f"{headpath}/yolo_data/val/{os.path.basename(os.path.dirname((filepath)))}/{os.path.basename(filepath)}"  # check the path to the first image in the training set
+    resize_and_save_image(filepath2, dest_path)    
 
-# Set the directories for YOLO
-train_dir = f"{headpath}/yolo_data/train/"
-val_dir = f"{headpath}/yolo_data/val/"
-
-# Generate the YOLO command
-yolo_command = generate_yolo_command(train_dir, val_dir)
-print("Copy and paste this command into your terminal:")
-print(yolo_command)
 # %%'c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-lila/yolo_data/val/'
 ## data has the root dir with test and train folders in it
 yolo classify train model=yolo11n-cls data='c:/Users/kapur/Dropbox/other projects/cv4e/data/osu-small-animals-lila/yolo_data/' epochs=50 patience=10
-# %%
+# %%Evaluation
+""" What does the framework say your accuracy was?
+Compute the same thing yourself
+Plot your train/val curves… how do they compare to the examples we showed earlier?  Does it look like your training went well?
+Plot a confusion matrix (NB: yolo plots this for you, make sure they agree)
+Pick an image that you think should be “easy”, first from the training set, which makes it extra easy.  Run the model on that image.  Did the model get it right?
+ """
