@@ -178,11 +178,11 @@ script_dir = os.path.dirname(os.path.abspath(__file__)) ## a la "here"
 
 # Create YOLO-compatible directories relative to the script's directory
 # Create YOLO-compatible directories relative to the script's directory
-train_dir = os.path.join(script_dir, "..", "yolo_data/train")
-val_dir = os.path.join(script_dir, "..", "yolo_data/val")
+train_dir = os.path.join(script_dir, "..", "data/osu-small-animals-lila/yolo_data/train")
+val_dir = os.path.join(script_dir, "..", "data/osu-small-animals-lila/yolo_data/val")
 #os.makedirs(train_dir, exist_ok=True)
 #os.makedirs(val_dir, exist_ok=True)
-headpath
+#headpath
 # Resize dimensions (e.g., 640x640 for YOLO)
 resize_dim = (224, 224)
 train_set.head()
@@ -195,11 +195,10 @@ def resize_and_save_image(src_path, dest_path):
         img_resized.save(dest_path)
 
 # Create resized images and shortcuts for training images
-for filepath in train_set['image_path']:
+for filepath in train_set['image_id'][0:5]:
     filepath2 = f"{headpath}/{filepath}"  # check the path to the first image in the training set
-    dest_path = os.path.join("yolo_data/train", os.path.basename(filepath))
-   # dest_path = os.path.join("yolo_data/train", os.path.basename(filepath))
-    resize_and_save_image(filepath, dest_path)
+    dest_path = f"{headpath}/yolo_data/train/{os.path.basename(filepath)}"  # check the path to the first image in the training set
+    resize_and_save_image(filepath2, dest_path)
 
 # Create resized images and shortcuts for validation images
 for filepath in test_set['image_path']:
